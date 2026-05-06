@@ -8,6 +8,7 @@ import json
 import os
 import re
 import uuid
+import tempfile
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
@@ -42,7 +43,12 @@ FILE_SIZE_ERROR_TEXT = "File size should not be greater than 2 mb."
 FAILED_LOGIN_LIMIT = 5
 LOGIN_LOCKOUT_SECONDS = 120
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "").strip()
+SUPABASE_KEY = (
+    os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+    or os.getenv("SUPABASE_KEY", "").strip()
+    or os.getenv("SUPABASE_ANON_KEY", "").strip()
+    or os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "").strip()
+)
 SUPABASE_STORAGE_BUCKET = os.getenv("SUPABASE_STORAGE_BUCKET", "lost-found-uploads").strip() or "lost-found-uploads"
 _SUPABASE_CLIENT = None
 DEPARTMENTS = [
@@ -53,7 +59,10 @@ DEPARTMENTS = [
 ]
 
 if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+    try:
+        os.makedirs(UPLOAD_FOLDER)
+    except OSError as e:
+        print(f"Warning: could not create upload folder {UPLOAD_FOLDER}. Error: {e}")
 
 
 def get_supabase_client():
@@ -837,6 +846,19 @@ def _upload_file_to_supabase_storage(local_path, storage_path, content_type="app
     if not client:
         return None
 
+
+def _get_writable_upload_dir():
+    """Use project uploads dir when writable, otherwise temp dir (Vercel-safe)."""
+    try:
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+        probe = os.path.join(UPLOAD_FOLDER, ".write_test")
+        with open(probe, "w", encoding="utf-8") as f:
+            f.write("ok")
+        os.remove(probe)
+        return UPLOAD_FOLDER
+    except OSError:
+        return tempfile.gettempdir()
+
     try:
         with open(local_path, "rb") as f:
             data = f.read()
@@ -875,14 +897,19 @@ def save_uploaded_image(file):
 
     ext = file.filename.rsplit(".", 1)[1].lower()
     unique_name = str(uuid.uuid4())[:12] + "." + ext
-    local_path = os.path.join(UPLOAD_FOLDER, unique_name)
-    file.save(local_path)
+    write_dir = _get_writable_upload_dir()
+    local_path = os.path.join(write_dir, unique_name)
+    try:
+        file.save(local_path)
+    except OSError as e:
+        print(f"Image save failed: {e}")
+        return None
 
     # If Supabase is configured, upload to Storage and store the public URL in DB.
     storage_path = "uploads/" + unique_name
     content_type = getattr(file, "mimetype", None) or "application/octet-stream"
     public_url = _upload_file_to_supabase_storage(local_path, storage_path, content_type=content_type)
-    return {"stored": (public_url or unique_name), "local": unique_name}
+    return {"stored": (public_url or unique_name), "local": unique_name, "local_path": local_path}
 
 
 STUDENT_DB = [
@@ -1547,11 +1574,12 @@ def scan_id_card():
         return jsonify({"success": False, "message": FILE_SIZE_ERROR_TEXT})
 
     local_filename = saved.get("local") if isinstance(saved, dict) else None
+    local_path     = saved.get("local_path") if isinstance(saved, dict) else None
     stored_value   = saved.get("stored") if isinstance(saved, dict) else None
     if not local_filename or not stored_value:
         return jsonify({"success": False, "message": "Invalid image file"})
 
-    image_path    = os.path.join(UPLOAD_FOLDER, local_filename)
+    image_path = local_path or os.path.join(UPLOAD_FOLDER, local_filename)
     roll, student = ocr_scan_id_card(image_path)
 
     if student:

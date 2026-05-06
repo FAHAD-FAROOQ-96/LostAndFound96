@@ -71,7 +71,3 @@ create policy "Service role full access" on public.items
 create policy "Service role full access" on public.email_settings
   for all using (true) with check (true);
 
--- ============================================================
--- OPTIONAL: Drop old app_state table if you had it
--- ============================================================
--- drop table if exists public.app_state;

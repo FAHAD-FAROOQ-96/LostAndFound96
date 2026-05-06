@@ -38,10 +38,37 @@ var isIdCard     = false
 var MAX_IMAGE_BYTES = 2 * 1024 * 1024
 var FILE_SIZE_ERROR_TEXT = "File size should not be greater than 2 mb."
 
+function showPopupMessage(text, type) {
+    var wrap = document.querySelector(".flash-wrap")
+    if (!wrap) {
+        wrap = document.createElement("div")
+        wrap.className = "flash-wrap"
+        document.body.appendChild(wrap)
+    }
+    var flash = document.createElement("div")
+    flash.className = "flash flash-" + (type || "error")
+    flash.textContent = text
+    var closeBtn = document.createElement("button")
+    closeBtn.className = "flash-x"
+    closeBtn.textContent = "×"
+    closeBtn.addEventListener("click", function () {
+        flash.remove()
+    })
+    flash.appendChild(closeBtn)
+    wrap.appendChild(flash)
+    setTimeout(function () {
+        if (flash && flash.parentNode) {
+            flash.remove()
+        }
+    }, 4500)
+}
+
 function showFileSizeError() {
     if (!fileSizeError) return
     fileSizeError.textContent = FILE_SIZE_ERROR_TEXT
     fileSizeError.style.display = "block"
+    fileSizeError.style.visibility = "visible"
+    showPopupMessage(FILE_SIZE_ERROR_TEXT, "error")
 }
 
 function hideFileSizeError() {
@@ -107,7 +134,7 @@ removeImageBtn.addEventListener("click", function () {
 function handleFileSelected(file) {
     hideFileSizeError()
     if (!file.type.startsWith("image/")) {
-        alert("Please select an image file.")
+        showPopupMessage("Please select an image file.", "error")
         return
     }
 
@@ -116,7 +143,6 @@ function handleFileSelected(file) {
         clearImage()
         return
     }
-
     selectedFile = file
 
     // Show preview
@@ -164,6 +190,9 @@ function uploadAndScan(file) {
 
         if (!isIdCard) {
             // Not an ID card — just saved the image
+            if (!data.success && data.message) {
+                showPopupMessage(data.message, "error")
+            }
             return
         }
 
