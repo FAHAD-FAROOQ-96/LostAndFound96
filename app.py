@@ -24,7 +24,9 @@ import numpy as np
 # ============================================================
 # TESSERACT PATH — required on Windows
 # ============================================================
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+if os.name == "nt":
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+#pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 app = Flask(__name__)
 app.secret_key = "lostfound_iter1_secret"
@@ -2070,4 +2072,9 @@ if __name__ == "__main__":
     print("=" * 55)
     print("")
 
-    app.run(debug=True, port=5000)
+    #app.run(debug=True, port=5000)
+
+
+if __name__ == "__main__":
+    setup_sample_data()
+    app.run()
