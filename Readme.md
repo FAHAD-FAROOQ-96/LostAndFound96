@@ -93,22 +93,25 @@ python app.py
 
 ## 📸 Screenshots
 
-> Add screenshots of:
 - Home page
+- Login/Signup
+- Archive
+- LeaderBoard
+- Admin Panel
 - Report item page
 - Search results page
-- Dashboard (if available)
+- Dashboard 
 
 ---
 
 ## 🚧 Future Improvements
 
-- 🔐 User authentication system
-- 📱 Mobile responsive UI
-- 💬 Chat between users
 - 📍 Location-based item search
-- 📧 Email notifications
 - ☁️ Cloud database deployment
+- 🔐 Improved Security
+- 📱 Enhanced UI
+- 💬 Chat between users
+
 
 ---
 
