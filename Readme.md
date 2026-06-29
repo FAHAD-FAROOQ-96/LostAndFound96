@@ -93,14 +93,29 @@ python app.py
 
 ## 📸 Screenshots
 
-- Home page
 - Login/Signup
-- Archive
-- LeaderBoard
+  <img width="1908" height="960" alt="Screenshot 2026-06-29 175645" src="https://github.com/user-attachments/assets/73bc312f-53c8-4535-90bc-107d185e25bc" />
+  <img width="1907" height="977" alt="Screenshot 2026-06-29 175657" src="https://github.com/user-attachments/assets/6ee41e32-e935-4331-aff5-0b3bbf394311" />
+
+- Home Page
+  <img width="1907" height="972" alt="image" src="https://github.com/user-attachments/assets/50a0cb1c-8993-4a7c-8904-e5c33ed689aa" />
+
 - Admin Panel
+  <img width="1911" height="977" alt="Screenshot 2026-06-29 175713" src="https://github.com/user-attachments/assets/b16808ec-f21b-4569-8716-ece7b79cdc2e" />
+  <img width="1911" height="977" alt="Screenshot 2026-06-29 175730" src="https://github.com/user-attachments/assets/622a4f1d-83c8-485a-9e99-8bb42ab386c8" />
+
+- Archive
+  <img width="1908" height="977" alt="Screenshot 2026-06-29 175817" src="https://github.com/user-attachments/assets/d9dfd1a0-bb3f-48d9-8b6a-6ce3c5efefa7" />
+
+- LeaderBoard
+  <img width="1908" height="976" alt="Screenshot 2026-06-29 175804" src="https://github.com/user-attachments/assets/9059b6ec-14b4-4844-bf90-6b8b88a85f78" />
+
 - Report item page
+  <img width="1911" height="977" alt="Screenshot 2026-06-29 175743" src="https://github.com/user-attachments/assets/787c1f77-57dc-4d7b-ab33-f92a4bc5db76" />
+
 - Search results page
-- Dashboard 
+  <img width="1907" height="971" alt="Screenshot 2026-06-29 180029" src="https://github.com/user-attachments/assets/8b62fa9a-77ed-47c6-85ae-caeaa7225598" />
+
 
 ---
 
